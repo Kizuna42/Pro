@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\SoldItem;
 use App\Models\Profile;
 use Stripe\StripeClient;
+use App\Models\TradeStatus;
 
 class PurchaseController extends Controller
 {
@@ -34,10 +35,19 @@ class PurchaseController extends Controller
             Auth::id(),
             $item->price,
             $request->destination_postcode,
-            //ASCIIコードに日本語はないため、住所と建物名はエンコードする必要あり
             urlencode($request->destination_address),
             urlencode($request->destination_building) ?? null
         ];
+
+        // success_urlをroute()ヘルパーを使用して生成
+        $success_url = route('purchase.success', [
+            'item_id' => $item_id,
+            'user_id' => $user_id,
+            'amount' => $amount,
+            'sending_postcode' => $sending_postcode,
+            'sending_address' => $sending_address,
+            'sending_building' => $sending_building
+        ]);
 
         $checkout_session = $stripe->checkout->sessions->create([
             'payment_method_types' => [$request->payment_method],
@@ -57,35 +67,54 @@ class PurchaseController extends Controller
                 ],
             ],
             'mode' => 'payment',
-            'success_url' => "http://localhost/purchase/{$item_id}/success?user_id={$user_id}&amount={$amount}&sending_postcode={$sending_postcode}&sending_address={$sending_address}&sending_building={$sending_building}",
+            'success_url' => $success_url,
         ]);
 
         return redirect($checkout_session->url);
     }
 
-    public function success($item_id, Request $request){
-        //無事決済が成功した後に動くメソッドのため、決済以外でHTTPリクエストが送られた時用にクエリパラメータを検閲
+    public function success($item_id, Request $request)
+    {
+        // クエリパラメータの検証
         if(!$request->user_id || !$request->amount || !$request->sending_postcode || !$request->sending_address){
             throw new Exception("You need all Query Parameters (user_id, amount, sending_postcode, sending_address)");
         }
 
-        $stripe = new StripeClient(config('stripe.stripe_secret_key'));
+        try {
+            $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
-        $stripe->charges->create([
-            'amount' => $request->amount,
-            'currency' => 'jpy',
-            'source' => 'tok_visa',
-        ]);
+            // Stripe決済処理
+            $stripe->charges->create([
+                'amount' => $request->amount,
+                'currency' => 'jpy',
+                'source' => 'tok_visa',
+            ]);
 
-        SoldItem::create([
-            'user_id' => $request->user_id,
-            'item_id' => $item_id,
-            'sending_postcode' => $request->sending_postcode,
-            'sending_address' => $request->sending_address,
-            'sending_building' => $request->sending_building ?? null,
-        ]);
+            // 購入情報を保存
+            $soldItem = SoldItem::create([
+                'user_id' => $request->user_id,
+                'item_id' => $item_id,
+                'sending_postcode' => $request->sending_postcode,
+                'sending_address' => urldecode($request->sending_address),
+                'sending_building' => $request->sending_building ? urldecode($request->sending_building) : null
+            ]);
 
-        return redirect('/')->with('flashSuccess', '決済が完了しました！');
+            // 取引ステータスを作成
+            TradeStatus::create([
+                'sold_item_id' => $soldItem->item_id,
+                'is_completed' => false
+            ]);
+
+            // 商品を売り切れ状態に
+            $item = Item::find($item_id);
+            $item->update(['is_sold' => true]);
+
+            return redirect('/trade/' . $item_id)->with('success', '商品を購入しました');
+
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return redirect()->back()->with('error', '購入処理に失敗しました。もう一度お試しください。');
+        }
     }
 
     public function address($item_id, Request $request){
@@ -103,5 +132,33 @@ class PurchaseController extends Controller
         ]);
 
         return redirect()->route('purchase.index', ['item_id' => $request->item_id]);
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            // Stripeの処理...
+
+            // 購入処理が成功したら
+            $soldItem = SoldItem::create([
+                'item_id' => $item->id,
+                'user_id' => Auth::id(),
+                'stripe_payment_id' => $payment->id
+            ]);
+
+            // 取引ステータスを作成
+            TradeStatus::create([
+                'sold_item_id' => $soldItem->id,
+                'is_completed' => false
+            ]);
+
+            // 商品を売り切れ状態に
+            $item->update(['is_sold' => true]);
+
+            return redirect('/trade/' . $item->id)->with('success', '商品を購入しました');
+
+        } catch (\Exception $e) {
+            // エラー処理...
+        }
     }
 }
