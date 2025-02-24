@@ -35,24 +35,20 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
 ![alt](ER.png)
 
 ## テストアカウント
-name: 一般ユーザ  
-email: general1@gmail.com  
-password: password  
+name: 一般ユーザ
+email: general1@gmail.com
+password: password
 -------------------------
-name: 一般ユーザ  
-email: general2@gmail.com  
-password: password  
+name: 一般ユーザ
+email: general2@gmail.com
+password: password
 -------------------------
 
 ## PHPUnitを利用したテストに関して
-以下のコマンド:  
+以下のコマンド:
 ```
 docker-compose exec php bash
 php artisan migrate:fresh --env=testing
 ./vendor/bin/phpunit
 ```
-※.env.testingにもStripeのAPIキーを設定してください。  
-
-## 生徒様へ
-普段よりお世話になっております。  
-こちらの模範解答に関するご質問、またこちらに不備を見つけた、などの際は気兼ねなく申し付けください。
+※.env.testingにもStripeのAPIキーを設定してください。

@@ -5,11 +5,13 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Requests\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\TradeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +36,7 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/item/comment/{item_id}',[CommentController::class, 'create']);
     Route::get('/purchase/{item_id}',[PurchaseController::class, 'index'])->middleware('purchase')->name('purchase.index');
     Route::post('/purchase/{item_id}',[PurchaseController::class, 'purchase'])->middleware('purchase');
-    Route::get('/purchase/{item_id}/success', [PurchaseController::class, 'success']);
+    Route::get('/purchase/{item_id}/success', [PurchaseController::class, 'success'])->name('purchase.success');
     Route::get('/purchase/address/{item_id}',[PurchaseController::class, 'address']);
     Route::post('/purchase/address/{item_id}',[PurchaseController::class, 'updateAddress']);
     Route::get('/mypage', [UserController::class, 'mypage']);
@@ -60,3 +62,15 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     session()->forget('unauthenticated_user');
     return redirect('/mypage/profile');
 })->name('verification.verify');
+
+// 取引チャット関連
+Route::middleware(['auth'])->group(function () {
+    Route::get('/trade/{item_id}', [TradeController::class, 'show'])->name('trade.show');
+    Route::post('/trade/message/{trade_status_id}', [TradeController::class, 'store'])->name('trade.message.store');
+    Route::put('/trade/message/{message_id}', [TradeController::class, 'update'])->name('trade.message.update');
+    Route::delete('/trade/message/{message_id}', [TradeController::class, 'destroy'])->name('trade.message.destroy');
+    Route::post('/trade/{trade_status_id}/complete', [TradeController::class, 'complete'])->name('trade.complete');
+});
+
+    // 評価関連のルートを追加
+    Route::post('/rating', [RatingController::class, 'store'])->name('rating.store');
