@@ -88,7 +88,8 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
 
 ## ER 図
 
-![alt](ER.png)
+![ER Diagram (1)](https://github.com/user-attachments/assets/588e93d7-c467-496a-8d48-7232e495c314)
+
 
 ## テストアカウント
 
