@@ -16,13 +16,13 @@ class ItemsTableSeeder extends Seeder
      */
     public function run()
     {
-        $params = [
+        $first_user_items = [
             [
                 'name' => '腕時計',
                 'price' => 15000,
                 'description' => 'スタイリッシュなデザインのメンズ腕時計',
                 'img_url' => 'public/img/mens_clock.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$UNUSED,
             ],
             [
@@ -30,7 +30,7 @@ class ItemsTableSeeder extends Seeder
                 'price' => 5000,
                 'description' => '高速で信頼性の高いハードディスク',
                 'img_url' => 'public/img/hard_disk.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$HARMLESS,
             ],
             [
@@ -38,7 +38,7 @@ class ItemsTableSeeder extends Seeder
                 'price' => 300,
                 'description' => '新鮮な玉ねぎ3束のセット',
                 'img_url' => 'public/img/onion.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$HARMED,
             ],
             [
@@ -46,7 +46,7 @@ class ItemsTableSeeder extends Seeder
                 'price' => 4000,
                 'description' => 'クラシックなデザインの革靴',
                 'img_url' => 'public/img/leather_shoes.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$BAD_CONDITION,
             ],
             [
@@ -54,9 +54,12 @@ class ItemsTableSeeder extends Seeder
                 'price' => 45000,
                 'description' => '高性能なノートパソコン',
                 'img_url' => 'public/img/laptop_PC.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$UNUSED,
             ],
+        ];
+
+        $second_user_items = [
             [
                 'name' => 'マイク',
                 'price' => 8000,
@@ -70,7 +73,7 @@ class ItemsTableSeeder extends Seeder
                 'price' => 3500,
                 'description' => 'おしゃれなショルダーバッグ',
                 'img_url' => 'public/img/shoulder_bag.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$HARMED,
             ],
             [
@@ -78,7 +81,7 @@ class ItemsTableSeeder extends Seeder
                 'price' => 500,
                 'description' => '使いやすいタンブラー',
                 'img_url' => 'public/img/tumbler.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$BAD_CONDITION,
             ],
             [
@@ -86,7 +89,7 @@ class ItemsTableSeeder extends Seeder
                 'price' => 4000,
                 'description' => '手動のコーヒーミル',
                 'img_url' => 'public/img/coffer_mill.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$UNUSED,
             ],
             [
@@ -94,14 +97,17 @@ class ItemsTableSeeder extends Seeder
                 'price' => 2500,
                 'description' => '便利なメイクアップセット',
                 'img_url' => 'public/img/make_set.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$HARMLESS,
             ],
         ];
 
-        $range = count($params);
-        for ($i = 0; $i < $range; $i++){
-            Item::create($params[$i]);
+        foreach ($first_user_items as $item) {
+            Item::create($item);
+        }
+
+        foreach ($second_user_items as $item) {
+            Item::create($item);
         }
 
         Like::create([
