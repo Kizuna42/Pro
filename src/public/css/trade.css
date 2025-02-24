@@ -1,0 +1,487 @@
+.trade {
+	display: flex;
+	height: calc(100vh - 64px);
+	background: #f5f5f5;
+	margin: 0;
+}
+
+.trade__sidebar {
+	width: 300px;
+	background: gray;
+	border-right: 1px solid #ddd;
+	overflow-y: auto;
+}
+
+.trade__sidebar-title {
+	margin: 15px auto;
+	padding: 5px;
+	font-size: 28px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+}
+
+.trade__list {
+	padding: 15px;
+}
+
+.trade__item {
+	display: flex;
+	padding: 15px;
+	border-bottom: 1px solid #eee;
+	text-decoration: none;
+	color: #333;
+	background: white;
+	margin-bottom: 10px;
+	border-radius: 8px;
+}
+
+.trade__item:hover {
+	background: #f9f9f9;
+	transform: translateY(-2px);
+	transition: all 0.3s ease;
+}
+
+.trade__item-img {
+	width: 100px;
+	height: 100px;
+	margin-right: 15px;
+}
+
+.trade__item-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
+.trade__item-info {
+	flex: 1;
+}
+
+.trade__item-name {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	color: #333;
+}
+
+.trade__item-price {
+	font-size: 22px;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	gap: 2px;
+}
+
+.trade__item-price::before {
+	content: '¥';
+	font-size: 0.9em;
+	margin-right: 2px;
+}
+
+.trade__main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	max-width: calc(100% - 300px);
+}
+
+.trade__header {
+	background: white;
+	padding: 15px;
+	border-bottom: 2px solid #ddd;
+	border-top: 2px solid #ddd;
+}
+
+.trade__title-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 25px;
+	padding: 10px;
+}
+
+.trade__title-left {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.trade__user-icon {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	overflow: hidden;
+}
+
+.trade__user-icon img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.trade__title {
+	font-size: 40px;
+	font-weight: bold;
+	margin: 0;
+}
+
+.trade__complete-btn {
+	background: #ff4b4b;
+	color: white;
+	padding: 10px 20px;
+	border-radius: 25px;
+	border: none;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.trade__complete-btn:hover {
+	background: #ff3333;
+}
+
+.trade__item-detail {
+	display: flex;
+	align-items: center;
+	padding: 20px;
+	background: #f9f9f9;
+	border-radius: 12px;
+	margin: 15px;
+}
+
+.trade__item-detail .trade__item-img {
+	width: 180px;
+	height: 180px;
+	margin-right: 30px;
+}
+
+.trade__item-detail .trade__item-name {
+	font-size: 32px;
+	margin-bottom: 20px;
+	line-height: 1.4;
+}
+
+.trade__item-detail .trade__item-price {
+	font-size: 30px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.trade__item-detail .trade__item-price::before {
+	content: '¥';
+	font-size: 0.9em;
+	margin-right: 5px;
+}
+
+.trade__users {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 15px;
+	padding: 10px;
+	background: #f9f9f9;
+	border-radius: 8px;
+}
+
+.trade__user {
+	text-align: center;
+}
+
+.trade__user img {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	margin-bottom: 5px;
+}
+
+.trade__messages {
+	flex: 1;
+	overflow-y: auto;
+	padding: 15px;
+	background: #f5f5f5;
+	margin-bottom: 0;
+}
+
+.message {
+	display: flex;
+	margin-bottom: 20px;
+	align-items: flex-start;
+}
+
+.message--mine {
+	flex-direction: row-reverse;
+}
+
+.message__user {
+	margin: 0 10px;
+}
+
+.message__user img {
+	height: 36px;
+	width: 40px;
+	border-radius: 50%;
+}
+
+.message__content {
+	max-width: 60%;
+}
+
+.message__text {
+	background: white;
+	padding: 12px;
+	border-radius: 12px;
+	margin-bottom: 5px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.message--mine .message__text {
+	background: #007bff;
+	color: white;
+}
+
+.message__image {
+	margin-bottom: 8px;
+}
+
+.message__image img {
+	max-width: 200px;
+	border-radius: 8px;
+}
+
+.message__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.message__edit,
+.message__delete {
+	font-size: 12px;
+	padding: 4px 8px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	background: #f0f0f0;
+}
+
+.trade__form {
+	background: white;
+	padding: 15px;
+	border-top: 1px solid #ddd;
+	margin-top: auto;
+}
+
+.trade__input-container {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	margin-bottom: 10px;
+}
+
+.trade__input {
+	flex: 1;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	resize: none;
+	height: 50px;
+	margin-bottom: 0;
+}
+
+.trade__actions {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.trade__file {
+	display: inline-flex;
+	align-items: center;
+	padding: 12px 15px;
+	border: 2px solid #ff4b4b;
+	border-radius: 8px;
+	color: #ff4b4b;
+	cursor: pointer;
+	height: 50px;
+	white-space: nowrap;
+}
+
+.trade__file input {
+	display: none;
+}
+
+.trade__submit {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	background: #007bff;
+	color: white;
+	border: none;
+	padding: 12px 20px;
+	border-radius: 8px;
+	cursor: pointer;
+	height: 50px;
+	white-space: nowrap;
+}
+
+.trade__submit i {
+	font-size: 16px;
+}
+
+.trade__error {
+	color: #ff4b4b;
+	margin: 0;
+	font-size: 14px;
+}
+
+.trade__preview {
+	margin-top: 10px;
+	position: relative;
+	display: inline-block;
+}
+
+.trade__preview img {
+	max-width: 200px;
+	max-height: 200px;
+	border-radius: 8px;
+}
+
+.preview__remove {
+	position: absolute;
+	top: -10px;
+	right: -10px;
+	background: #ff4b4b;
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+/* モーダル関連のスタイル */
+.modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* 背景を暗くする */
+	z-index: 1000;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.modal.active {
+	display: block;
+	/* モーダル表示時にblockに */
+	opacity: 1;
+}
+
+.modal__content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fdfce6;
+	padding: 30px;
+	border-radius: 12px;
+	width: 90%;
+	max-width: 500px;
+	text-align: left;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.modal__content h2 {
+	font-size: 24px;
+	color: #333;
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+	border-bottom: 2px solid #eee;
+}
+
+.modal__content p {
+	font-size: 16px;
+	color: #666;
+	margin-bottom: 30px;
+}
+
+/* 星評価のスタイル */
+.rating {
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: flex-start;
+	gap: 15px;
+	margin: 30px 0;
+	padding-left: 20px;
+}
+
+.rating input {
+	display: none;
+}
+
+.rating label {
+	font-size: 35px;
+	color: #ddd;
+	cursor: pointer;
+}
+
+/* ホバー時の星の色変更 */
+.rating label:hover,
+.rating label:hover ~ label {
+	color: #ffd700;
+}
+
+/* 選択時の星の色変更 */
+.rating input:checked + label,
+.rating input:checked + label ~ label {
+	color: #ddd;
+}
+
+.rating input:checked + label {
+	color: #ffd700;
+}
+
+/* 選択された星より前の星を光らせる */
+.rating input:checked ~ input + label {
+	color: #ffd700;
+}
+
+/* 送信ボタンのコンテナ */
+.rating-submit-container {
+	border-top: 2px solid #eee;
+	padding-top: 20px;
+	margin-top: 30px;
+	display: flex;
+	justify-content: flex-end;
+}
+
+/* 送信ボタンのスタイル */
+.rating-submit-btn {
+	background-color: #ff4b4b;
+	color: white;
+	padding: 12px 30px;
+	border: none;
+	border-radius: 6px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.rating-submit-btn:hover {
+	background-color: #ff3333;
+}
