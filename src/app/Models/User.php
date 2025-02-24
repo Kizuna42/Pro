@@ -45,7 +45,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function profile()
     {
-        return $this->hasOne('App\Models\Profile');
+        return $this->hasOne(Profile::class);
     }
 
     public function likes()
@@ -56,10 +56,29 @@ class User extends Authenticatable implements MustVerifyEmail
     public function comments()
     {
         return $this->hasMany('App\Models\Comment');
-    }  
+    }
 
     public function items()
     {
-        return $this->hasMany('App\Models\Item');
-    }  
+        return $this->hasMany(Item::class);
+    }
+
+    public function ratingsGiven()
+    {
+        return $this->hasMany(Rating::class, 'rating_user_id');
+    }
+
+    public function ratingsReceived()
+    {
+        return $this->hasMany(Rating::class, 'rated_user_id');
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        $ratings = $this->ratingsReceived;
+        if ($ratings->isEmpty()) {
+            return null;
+        }
+        return $ratings->avg('rating');
+    }
 }

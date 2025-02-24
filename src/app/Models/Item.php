@@ -9,14 +9,15 @@ use Illuminate\Support\Facades\Auth;
 class Item extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'price',
         'description',
         'img_url',
-        'user_id', 
+        'user_id',
         'condition_id',
+        'is_sold'
     ];
 
     public function user()
@@ -77,6 +78,21 @@ class Item extends Model
 
     public static function scopeItem($query, $item_name){
         return $query->where('name', 'like', '%'.$item_name.'%');
+    }
+
+    public function isSold()
+    {
+        return $this->soldItem()->exists();
+    }
+
+    public function soldItem()
+    {
+        return $this->hasOne(SoldItem::class);
+    }
+
+    public function tradeStatus()
+    {
+        return $this->hasOneThrough(TradeStatus::class, SoldItem::class, 'item_id', 'sold_item_id');
     }
 
 }
