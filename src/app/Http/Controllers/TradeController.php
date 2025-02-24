@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TradeCompletedMail;
+use Illuminate\Support\Facades\DB;
 
 class TradeController extends Controller
 {
@@ -107,24 +108,24 @@ class TradeController extends Controller
 
     public function complete($trade_status_id)
     {
-        $tradeStatus = TradeStatus::findOrFail($trade_status_id);
-
-        // 購入者のみが完了できる
-        if (Auth::id() !== $tradeStatus->soldItem->user_id) {
-            return response()->json(['error' => '取引を完了する権限がありません'], 403);
-        }
-
-        $tradeStatus->update(['is_completed' => true]);
-
         try {
-            // 出品者にメール送信
-            $seller = $tradeStatus->soldItem->item->user;
-            Mail::to($seller->email)->send(new TradeCompletedMail($tradeStatus));
-        } catch (\Exception $e) {
-            \Log::error('メール送信エラー: ' . $e->getMessage());
-            // メール送信エラーは無視して処理を続行
-        }
+            DB::transaction(function () use ($trade_status_id) {
+                $tradeStatus = TradeStatus::findOrFail($trade_status_id);
 
-        return response()->json(['success' => true]);
+                if (Auth::id() !== $tradeStatus->soldItem->user_id) {
+                    throw new \Exception('取引を完了する権限がありません');
+                }
+
+                $tradeStatus->update(['is_completed' => true]);
+            });
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            \Log::error('取引完了エラー: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
