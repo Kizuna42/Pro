@@ -92,21 +92,21 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
 
 ## テストアカウント
 
-name: 出品者 A (CO01-CO05)
-email: seller_a@gmail.com
-password: password
+name: 出品者 A (CO01-CO05)<br>
+email: seller_a@gmail.com<br>
+password: password<br>
 
 ---
 
-name: 出品者 B (CO06-CO10)
-email: seller_b@gmail.com
-password: password
+name: 出品者 B (CO06-CO10)<br>
+email: seller_b@gmail.com<br>
+password: password<br>
 
 ---
 
-name: 一般ユーザー
-email: general@gmail.com
-password: password
+name: 一般ユーザー<br>
+email: general@gmail.com<br>
+password: password<br>
 
 ---
 
