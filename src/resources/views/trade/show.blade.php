@@ -116,16 +116,25 @@
     </div>
 </div>
 
+<!-- 評価ボタン - 取引完了後かつ未評価の場合のみ表示 -->
+@if($tradeStatus->is_completed && !$hasRated)
+    <div class="trade__rating-notice">
+        <button onclick="showRatingModal()" class="btn btn-primary">
+            {{ Auth::id() === $item->user_id ? '購入者' : '出品者' }}を評価する
+        </button>
+    </div>
+@endif
+
 <!-- 評価モーダル -->
-<div id="ratingModal" class="modal">
+<div id="ratingModal" class="modal {{ $showRatingModal ? 'active' : '' }}">
     <div class="modal__content">
-        <h2>取引が完了しました</h2>
-        <p>今回の取引相手はどうでしたか？</p>
+        <h2>取引評価</h2>
+        <p>{{ Auth::id() === $item->user_id ? '購入者' : '出品者' }}の対応はいかがでしたか？</p>
 
         <form id="ratingForm" action="{{ route('rating.store') }}" method="POST">
             @csrf
             <input type="hidden" name="trade_status_id" value="{{ $tradeStatus->id }}">
-            <input type="hidden" name="rated_user_id" value="{{ $item->user_id }}">
+            <input type="hidden" name="rated_user_id" value="{{ Auth::id() === $item->user_id ? $soldItem->user_id : $item->user_id }}">
 
             <div class="rating">
                 <div class="rating">

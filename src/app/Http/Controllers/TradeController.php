@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TradeCompletedMail;
 use Illuminate\Support\Facades\DB;
+use App\Models\Rating;
 
 class TradeController extends Controller
 {
-    public function show($item_id)
+    public function show($item_id, Request $request)
     {
         $item = Item::with('user')->findOrFail($item_id);
         $soldItem = SoldItem::with(['user', 'user.profile'])->where('item_id', $item_id)->first();
@@ -33,6 +34,17 @@ class TradeController extends Controller
         $tradeStatus = TradeStatus::with(['messages.user.profile'])
             ->where('sold_item_id', $soldItem->item_id)
             ->firstOrFail();
+
+        // 既に評価済みかチェック
+        $hasRated = Rating::where([
+            'trade_status_id' => $tradeStatus->id,
+            'rating_user_id' => Auth::id()
+        ])->exists();
+
+        // 取引完了済みで未評価の場合、評価モーダルを表示
+        $showRatingModal = $tradeStatus->is_completed
+            && !$hasRated
+            && ($request->query('show_rating', false) || session('show_rating', false));
 
         // 未読メッセージを既読に
         $tradeStatus->messages()
@@ -54,7 +66,14 @@ class TradeController extends Controller
                 return $trade->getLatestMessageAt();
             });
 
-        return view('trade.show', compact('item', 'tradeStatus', 'otherTrades', 'soldItem'));
+        return view('trade.show', compact(
+            'item',
+            'tradeStatus',
+            'otherTrades',
+            'soldItem',
+            'showRatingModal',
+            'hasRated'
+        ));
     }
 
     public function store(MessageRequest $request, $trade_status_id)
@@ -117,6 +136,14 @@ class TradeController extends Controller
                 }
 
                 $tradeStatus->update(['is_completed' => true]);
+
+                // 出品者にメール送信
+                $seller = $tradeStatus->soldItem->item->user;
+                Mail::to($seller->email)->send(new TradeCompletedMail(
+                    $tradeStatus,
+                    $tradeStatus->soldItem->item,
+                    Auth::user() // 購入者
+                ));
             });
 
             return response()->json(['success' => true]);
