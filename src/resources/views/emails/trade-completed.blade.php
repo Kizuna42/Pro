@@ -1,13 +1,21 @@
-@component('mail::message')
-# 取引が完了しました
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h2>取引が完了しました</h2>
 
-{{ $tradeStatus->soldItem->item->name }}の取引が完了しました。
-購入者からの評価をお待ちください。
+    <p>{{ $buyer->name }}様が取引を完了しました。</p>
 
-@component('mail::button', ['url' => route('trade.show', $tradeStatus->soldItem->item_id)])
-取引画面を確認する
-@endcomponent
+    <h3>取引商品情報：</h3>
+    <ul>
+        <li>商品名：{{ $item->name }}</li>
+        <li>取引金額：{{ number_format($item->price) }}円</li>
+    </ul>
 
-ご利用ありがとうございました。
+    <p>取引の評価をお願いいたします。</p>
 
-@endcomponent
+    <a href="{{ route('trade.show', $item->id) }}">取引画面へ</a>
+</body>
+</html>

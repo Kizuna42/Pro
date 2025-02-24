@@ -128,16 +128,21 @@
             <input type="hidden" name="rated_user_id" value="{{ $item->user_id }}">
 
             <div class="rating">
-                <input type="radio" id="star5" name="rating" value="5">
-                <label for="star5"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star4" name="rating" value="4">
-                <label for="star4"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star3" name="rating" value="3">
-                <label for="star3"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star2" name="rating" value="2">
-                <label for="star2"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star1" name="rating" value="1" required>
-                <label for="star1"><i class="fas fa-star"></i></label>
+                <div class="rating">
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star1" name="rating" value="1" required>
+                    <label for="star1"><i class="fas fa-star"></i></label>
+                </div>
+                <div class="rating-error" style="color: red; display: none;">
+                    評価を選択してください
+                </div>
             </div>
 
             <div class="rating-submit-container">
@@ -148,6 +153,50 @@
 </div>
 
 <script>
+// ページ読み込み時に保存された入力内容を復元
+document.addEventListener('DOMContentLoaded', () => {
+    const completeBtn = document.getElementById('completeBtn');
+    const completeForm = document.getElementById('completeForm');
+
+    if (completeBtn && completeForm) {
+        completeBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            if (confirm('取引を完了しますか？')) {
+                const formAction = completeForm.getAttribute('action');
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+                try {
+                    const response = await fetch(formAction, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            _token: csrfToken
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    if (data.success) {
+                        showRatingModal();
+                    } else {
+                        throw new Error(data.message || '取引完了処理に失敗しました');
+                    }
+                } catch (error) {
+                    console.error('エラー:', error);
+                    alert('取引完了処理中にエラーが発生しました。ページを更新して再度お試しください。');
+                }
+            }
+        });
+    }
+});
+
 function editMessage(id, text) {
     const textarea = document.querySelector('.trade__input');
     textarea.value = text;
@@ -187,7 +236,6 @@ function removePreview() {
     document.querySelector('input[type="file"]').value = '';
 }
 
-// モーダルを表示する関数
 function showRatingModal() {
     const modal = document.getElementById('ratingModal');
     if (modal) {
@@ -195,52 +243,47 @@ function showRatingModal() {
     }
 }
 
-// 取引完了ボタンのクリックイベント
 document.addEventListener('DOMContentLoaded', () => {
-    const completeBtn = document.getElementById('completeBtn');
-    const completeForm = document.getElementById('completeForm');
-
-    if (completeBtn && completeForm) {
-        completeBtn.addEventListener('click', (e) => {
+    const ratingForm = document.getElementById('ratingForm');
+    if (ratingForm) {
+        ratingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            if (confirm('取引を完了しますか？')) {
-                const formAction = completeForm.getAttribute('action');
-                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            // 評価が選択されているか確認
+            const rating = ratingForm.querySelector('input[name="rating"]:checked');
+            const errorDiv = ratingForm.querySelector('.rating-error');
 
-                if (!csrfToken) {
-                    console.error('CSRF トークンが見つかりません');
-                    alert('セッションエラーが発生しました。ページを更新してください。');
-                    return;
-                }
+            if (!rating) {
+                errorDiv.style.display = 'block';
+                return;
+            }
+            errorDiv.style.display = 'none';
 
-                fetch(formAction, {
+            const formData = new FormData(ratingForm);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            try {
+                const response = await fetch(ratingForm.action, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken.getAttribute('content')
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({
-                        _token: csrfToken.getAttribute('content')
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        showRatingModal();
-                    } else {
-                        throw new Error(data.message || '取引完了処理に失敗しました');
-                    }
-                })
-                .catch(error => {
-                    console.error('エラー:', error);
-                    alert('取引完了処理中にエラーが発生しました。ページを更新して再度お試しください。');
+                    body: formData,
+                    credentials: 'same-origin'
                 });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '{{ route("items.list") }}';
+                } else {
+                    throw new Error(data.message || '評価の送信に失敗しました');
+                }
+            } catch (error) {
+                console.error('エラー詳細:', error);
+                alert(error.message || '評価の送信中にエラーが発生しました。もう一度お試しください。');
             }
         });
     }
